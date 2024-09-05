@@ -75,7 +75,7 @@ def main() -> int:
 	# search for the port
 	try:
 		port = searchPort()
-	except Exception as e:
+	except FileNotFoundError:
 		print("ERROR: ProtonVPN log file not found")
 		return -1
 	if port == "":
@@ -86,7 +86,7 @@ def main() -> int:
 	# set port in qBit settings
 	try:
 		qBitSettings(port)
-	except Exception as e:
+	except FileNotFoundError:
 		print("ERROR: qBitTorrent settings file not found")
 		return -3
 
