@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import traceback
 import psutil
 
 """
@@ -67,10 +68,44 @@ def startQBit():
 	else:
 		print("Error: qBittorrent executable not found.")
 
+def main() -> int:
+	# kill qBitTorrent
+	killQBit()
 
-killQBit()
-port = searchPort()
-print("Port: " + port)
-qBitSettings(port)
-startQBit()
-input()
+	# search for the port
+	try:
+		port = searchPort()
+	except Exception as e:
+		print("ERROR: ProtonVPN log file not found")
+		return -1
+	if port == "":
+		print("ERROR: Port not found in ProtonVPN log file")
+		return -2
+	print("Port: " + port)
+
+	# set port in qBit settings
+	try:
+		qBitSettings(port)
+	except Exception as e:
+		print("ERROR: qBitTorrent settings file not found")
+		return -3
+
+	# start qBitTorrent
+	try:
+		startQBit()
+	except Exception as e:
+		print("ERROR: Failed to start qBitTorrent")
+		return -4
+	
+	return 0
+
+# keep console window open, if there was an error
+try:
+	return_code = main()
+except Exception as e:
+	traceback.print_exc() 
+	return_code = -5
+
+if return_code < 0:
+	print("\npress <ENTER> to close the window")
+	input()
